@@ -2,6 +2,7 @@
 # Or maybe use this: https://gml.noaa.gov/grad/solcalc/solareqns.PDF
 
 require 'date'
+include Math
 
 class String
   def red
@@ -24,22 +25,20 @@ end
 def pad_date(date)
   d, m, y = date.split '-'
   d = "0" + d if d.length == 1
-  m = "0" + m if m.length == 1
-  y = "20" + y if y.length == 2
-  y = "200" + y if y.length == 1
+  m = "0" + m if m.length == 1 
+  y = y.to_i + 2000 if y.to_i < 100
   return "#{d}-#{m}-#{y}"
 end
 
-# Returns fraction of the day.
-def time_to_fraction(time)
-  h, m, s = time.split ':'
-  return (h.to_i * 3600 + m.to_i * 60 + s.to_i) / 86400.0
+def string_to_date(str)
+  d, m, y = str.split '-'
+  Date.parse("#{y}-#{m}-#{d}")
 end
 
 # Returns number of hours passed in the day, in fractional hours.
 def time_to_hours(time)
   h, m, s = time.split ':'
-  h.to_i + m.to_i / 60.0 + s.to_i / 3600.0
+  h.to_i + (((m.to_i * 60) + s.to_i) / 3600.0)
 end
 
 def leap_year?(year)
@@ -55,7 +54,12 @@ def get_datetime()
   loop do
     puts "Enter date in format dd-mm-yyyy"
     date = gets.chomp
-    break if valid_date?(date)
+
+    if valid_date?(date)
+      date = string_to_date(pad_date(date))
+      break
+    end
+
     puts "Invalid date!".red
   end
 
@@ -70,11 +74,30 @@ def get_datetime()
 end
 
 
+date, time = get_datetime
+diy = leap_year?(date.year) ? 366 : 365 # days in year
 
-#date, time = get_datetime
+# fy = fractional year, in radians
+fy = ((2 * PI) / diy) * (date.yday - 1 + ((time_to_hours(time) - 12) / 24.0))
 
-puts time_to_fraction("18:00:00")
-puts time_to_hours("12:45:00")
+puts fy
+
+
+
+
+
+
+
+
+
+
+# ======================================= https://en.wikipedia.org/wiki/Position_of_the_Sun =======================================
+
+# Returns fraction of the day.
+# def time_to_fraction(time)
+#   h, m, s = time.split ':'
+#   return (h.to_i * 3600 + m.to_i * 60 + s.to_i) / 86400.0
+# end
 
 # Start by calculating n, the number of days (positive or negative, including fractional days) since Greenwich noon,
 # Terrestrial Time, on 1 January 2000 (J2000.0). If the Julian date (JD) for the desired time is known, then
@@ -84,12 +107,6 @@ puts time_to_hours("12:45:00")
 
 # puts n
 
-
-# To be a leap year, the year number must be divisible by four,
-# except for end-of-century years, which must be divisible by 400.
-# This means that the year 2000 was a leap year, although 1900 was not. 
-
-# 2020, 2024 and 2028 are all leap years.
 
 
 
