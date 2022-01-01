@@ -34,24 +34,28 @@ def time_to_fraction(time)
   return (h.to_i * 3600 + m.to_i * 60 + s.to_i) / 86400.0
 end
 
+def get_datetime()
+  date = "date-not-set"
+  time = "time-not-set"
 
-date = "date-not-set"
-time = "time-not-set"
+  loop do
+    puts "Enter date in format dd-mm-yyyy"
+    date = gets.chomp
+    break if valid_date?(date)
+    puts "Invalid date!".red
+  end
 
-loop do
-  puts "Enter date in format dd-mm-yyyy"
-  date = gets.chomp
-  break if valid_date?(date)
-  puts "Invalid date!".red
+  loop do
+    puts "Enter time in format hh:mm:ss"
+    time = gets.chomp
+    break if valid_time?(time)
+    puts "Invalid time!".red
+  end
+
+  [date, time]
 end
 
-loop do
-  puts "Enter time in format hh:mm:ss"
-  time = gets.chomp
-  break if valid_time?(time)
-  puts "Invalid time!".red
-end
-
+date, time = get_datetime
 
 # Start by calculating n, the number of days (positive or negative, including fractional days) since Greenwich noon,
 # Terrestrial Time, on 1 January 2000 (J2000.0). If the Julian date (JD) for the desired time is known, then
