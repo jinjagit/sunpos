@@ -1,4 +1,5 @@
 # Algorithm based on information in: https://en.wikipedia.org/wiki/Position_of_the_Sun
+# Or maybe use this: https://gml.noaa.gov/grad/solcalc/solareqns.PDF
 
 require 'date'
 
@@ -29,9 +30,22 @@ def pad_date(date)
   return "#{d}-#{m}-#{y}"
 end
 
+# Returns fraction of the day.
 def time_to_fraction(time)
   h, m, s = time.split ':'
   return (h.to_i * 3600 + m.to_i * 60 + s.to_i) / 86400.0
+end
+
+# Returns number of hours passed in the day, in fractional hours.
+def time_to_hours(time)
+  h, m, s = time.split ':'
+  h.to_i + m.to_i / 60.0 + s.to_i / 3600.0
+end
+
+def leap_year?(year)
+  return true if year % 4 == 0 && year % 100 != 0
+  return true if year % 400 == 0
+  false
 end
 
 def get_datetime()
@@ -46,7 +60,7 @@ def get_datetime()
   end
 
   loop do
-    puts "Enter time in format hh:mm:ss"
+    puts "Enter time in 24-hour format hh:mm:ss"
     time = gets.chomp
     break if valid_time?(time)
     puts "Invalid time!".red
@@ -55,12 +69,27 @@ def get_datetime()
   [date, time]
 end
 
-date, time = get_datetime
+
+
+#date, time = get_datetime
+
+puts time_to_fraction("18:00:00")
+puts time_to_hours("12:45:00")
 
 # Start by calculating n, the number of days (positive or negative, including fractional days) since Greenwich noon,
 # Terrestrial Time, on 1 January 2000 (J2000.0). If the Julian date (JD) for the desired time is known, then
 # n = JD - 2451545.0
 
-n = Date.parse(pad_date(date)).jd - 2451545.0 + time_to_fraction(time)
+# n = Date.parse(pad_date(date)).jd - 2451545.0 + time_to_fraction(time)
 
-puts n
+# puts n
+
+
+# To be a leap year, the year number must be divisible by four,
+# except for end-of-century years, which must be divisible by 400.
+# This means that the year 2000 was a leap year, although 1900 was not. 
+
+# 2020, 2024 and 2028 are all leap years.
+
+
+
