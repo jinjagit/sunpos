@@ -1,5 +1,4 @@
-# Algorithm based on information in: https://en.wikipedia.org/wiki/Position_of_the_Sun
-# Or maybe use this: https://gml.noaa.gov/grad/solcalc/solareqns.PDF
+# Algorithm based on information in: https://gml.noaa.gov/grad/solcalc/solareqns.PDF
 
 require 'date'
 include Math
@@ -78,7 +77,7 @@ date, time = get_datetime
 diy = leap_year?(date.year) ? 366 : 365 # days in year
 
 # fy = fractional year, in radians
-fy = ((2 * PI) / diy) * (date.yday - 1 + ((time_to_hours(time) - 12) / 24.0))
+fy = ((2 * PI) / diy) * (date.yday - 1 + (time_to_hours(time) / 24))
 
 puts fy
 
