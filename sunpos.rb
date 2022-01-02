@@ -48,13 +48,6 @@ def string_to_date(str)
   Date.parse("#{y}-#{m}-#{d}")
 end
 
-# Returns number of hours passed in the day, in fractional hours.
-# TODO: This might not be needed.
-def time_to_hours(time)
-  h, m, s = time.split ':'
-  h.to_i + (((m.to_i * 60) + s.to_i) / 3600.0)
-end
-
 # Returns fraction of the day.
 def time_to_fraction(time)
   h, m, s = time.split ':'
