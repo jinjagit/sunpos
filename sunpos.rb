@@ -94,9 +94,8 @@ def leap_year?(year)
   false
 end
 
-def get_datetime()
+def get_date()
   date = "date-not-set"
-  time = "time-not-set"
 
   loop do
     puts "Enter date in format dd-mm-yyyy"
@@ -110,14 +109,7 @@ def get_datetime()
     puts "Invalid date!".red
   end
 
-  loop do
-    puts "Enter time in 24-hour format hh:mm:ss"
-    time = gets.chomp
-    break if valid_time?(time)
-    puts "Invalid time!".red
-  end
-
-  [date, time]
+  date
 end
 
 # ========== Calculate the Sun's position ============
@@ -157,38 +149,46 @@ def sunpos (date, time, latitude, longitude, timezone)
 end
 
 
-# date, time = get_datetime
+date = get_date
 
-date = Date.parse("2021-12-31")
-time = "23:59:59"
 longitude = 0.0    # Greenwich meridian (in degrees)
 latitude = 51.4769 # Greenwich observatory (in degrees)
 timezone = 0       # UTC == GMT
 
-sza, saa = sunpos(date, time, latitude, longitude, timezone)
+times = ["03:00:00", "15:00:00"]
+sunrise = nil
+sunset = nil
 
-puts sza.radians
-puts saa.radians
+2.times do |i|
+  h, m, s = times[i].split(':').map(&:to_i)
+  start = h
+  smallest_diff = nil
 
-time = "04:00:00"
-h, m, s = time.split(':').map(&:to_i)
-start = h
+  # iterate through 8 hours, minute by minute
+  loop do
+    sza, saa = sunpos(date, integers_to_time(h, m, s), latitude, longitude, timezone)
 
-# iterate through 6 hours, minute by minute
-loop do
-  sza, saa = sunpos(date, integers_to_time(h, m, s), latitude, longitude, timezone)
+    # for sunrise or sunset, the zenith is set to 90.833 degrees (the approximate correction for atmospheric refraction)
+    diff = (90.833 - sza.radians).abs
 
-  # for sunrise or sunset, the zenith is set to 90.833 degrees (the approximate correction for atmospheric refraction)
-  if (sza.radians - 90.833).abs < 5.0
-    puts "sza is #{sza.radians} at #{integers_to_time(h, m, s)}"
+    if diff < 5.0
+      if (smallest_diff.nil? || diff < smallest_diff)
+        smallest_diff = diff
+        sunrise = integers_to_time(h, m, s) if i == 0
+        sunset = integers_to_time(h, m, s) if i == 1
+      end
+    end
+
+    m += 1
+
+    if m == 60
+      h += 1
+      m = 0
+    end
+
+    break if h == start + 8 
   end
-
-  m += 1
-
-  if m == 60
-    h += 1
-    m = 0
-  end
-
-  break if h == start + 6 
 end
+
+puts "sunrise is at approximately #{sunrise}"
+puts "sunset is at approximately  #{sunset}"
