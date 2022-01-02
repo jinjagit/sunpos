@@ -98,7 +98,8 @@ end
 date = Date.parse("2021-12-31")
 time = "23:59:59"
 h, m, s = time.split(':').map(&:to_i)
-longitude = 0.0 # Greenwich meridian
+longitude = 0.0 # Greenwich meridian (in degrees)
+latitude = 51.4769 # Greenwich observatory (in degrees)
 timezone = 0    # UTC == GMT
 
 diy = leap_year?(date.year) ? 366 : 365 # days in year
@@ -120,8 +121,10 @@ t_offset = eqtime + (4 * longitude) - (60 * timezone)
 # tst = true solar time (in minutes), where hr is the hour (0 - 23), mn is the minute (0 - 59), sc is the second (0 - 59)
 tst = (h * 60) + m + (s / 60.0) + t_offset
 
-# sha = solar hour angle, (in degrees)
-sha = (tst / 4) - 180
+# sha = solar hour angle, (in radians)
+sha = ((tst / 4.0) - 180).radians
 
-puts 90.degrees
-puts 1.5707963267948966.radians
+# The solar zenith angle (in radians) can then be found from the hour angle (sha), latitude (lat) and solar declination (decl) using the following equation:
+sza = acos((sin(latitude.radians) * sin(decl)) + (cos(latitude.radians) * cos(decl) * cos(sha)))
+
+puts sza.degrees
