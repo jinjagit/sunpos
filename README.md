@@ -11,15 +11,15 @@ Testing solar zenith calculation by iterating through minutes of a given date to
 Example comparisons with values from: https://www.timeanddate.com/sun
 
 For London (longitude = 0.0 E, latitude = 51.4769 N), on 01-07-2021 (UTC+1, BST):  
-timeanddate.com gives:
+timeanddate.com gives:  
   `sunrise: 04:47, sunset: 21:20`  
-sunpos.rb gives:
+sunpos.rb gives:  
   `sunrise: 04:46, sunset: 21:20`  
 
 For Sao Paulo (longitude = 46.6396 W, latitude = 23.5558 S), on 01-07-2021 (UTC-3):  
-timeanddate.com gives:
+timeanddate.com gives:  
   `sunrise: 06:49, sunset: 17:31`  
-sunpos.rb gives:
+sunpos.rb gives:  
   `sunrise: 06:49, sunset: 17:31`  
 
 = within 1 minute of times given by timeanddate.com
