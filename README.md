@@ -1,4 +1,4 @@
-Algorithm based on information in: https://en.wikipedia.org/wiki/Position_of_the_Sun
+Algorithm based on information in: https://gml.noaa.gov/grad/solcalc/solareqns.PDF  
 
 Calculates sun's position in sky for any specified date, time, timezone, latitude and longitude.  
 Returns solar zenith and solar azimuth.  
