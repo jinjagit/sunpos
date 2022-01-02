@@ -35,9 +35,16 @@ def string_to_date(str)
 end
 
 # Returns number of hours passed in the day, in fractional hours.
+# TODO: This might not be needed.
 def time_to_hours(time)
   h, m, s = time.split ':'
   h.to_i + (((m.to_i * 60) + s.to_i) / 3600.0)
+end
+
+# Returns fraction of the day.
+def time_to_fraction(time)
+  h, m, s = time.split ':'
+  return (h.to_i * 3600 + m.to_i * 60 + s.to_i) / 86400.0
 end
 
 def leap_year?(year)
@@ -73,39 +80,16 @@ def get_datetime()
 end
 
 
-date, time = get_datetime
+# date, time = get_datetime
+
+date = Date.parse("2021-12-31")
+time = "23:59:59"
+
 diy = leap_year?(date.year) ? 366 : 365 # days in year
 
-# fy = fractional year, in radians
-fy = ((2 * PI) / diy) * (date.yday - 1 + (time_to_hours(time) / 24))
+# fy = fractional year, in radians (360 degrees ~= 6.28319 radians)
+fy = ((2 * PI) / diy) * (date.yday - 1 + time_to_fraction(time))
 
 puts fy
-
-
-
-
-
-
-
-
-
-
-# ======================================= https://en.wikipedia.org/wiki/Position_of_the_Sun =======================================
-
-# Returns fraction of the day.
-# def time_to_fraction(time)
-#   h, m, s = time.split ':'
-#   return (h.to_i * 3600 + m.to_i * 60 + s.to_i) / 86400.0
-# end
-
-# Start by calculating n, the number of days (positive or negative, including fractional days) since Greenwich noon,
-# Terrestrial Time, on 1 January 2000 (J2000.0). If the Julian date (JD) for the desired time is known, then
-# n = JD - 2451545.0
-
-# n = Date.parse(pad_date(date)).jd - 2451545.0 + time_to_fraction(time)
-
-# puts n
-
-
 
 
