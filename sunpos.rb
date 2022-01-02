@@ -90,6 +90,7 @@ diy = leap_year?(date.year) ? 366 : 365 # days in year
 # fy = fractional year, in radians (360 degrees ~= 6.28319 radians)
 fy = ((2 * PI) / diy) * (date.yday - 1 + time_to_fraction(time))
 
-puts fy
+# eqtime = equation of time (in minutes)
+eqtime = 229.18 * (0.000075 + (0.001868 * cos(fy)) - (0.032077 * sin(fy)) - (0.014615 * cos(2 * fy)) - (0.040849 * sin(2 * fy)))
 
-
+puts eqtime
