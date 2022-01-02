@@ -61,6 +61,33 @@ def time_to_fraction(time)
   return (h.to_i * 3600 + m.to_i * 60 + s.to_i) / 86400.0
 end
 
+# Returns time as string in 24-hour format
+def integers_to_time(h, m, s)
+  hrs = ''
+  mins = ''
+  secs = ''
+  
+  if h > 9
+    hrs = h.to_s
+  else
+    hrs = "0#{h}"
+  end
+
+  if m > 9
+    mins = m.to_s
+  else
+    mins = "0#{m}"
+  end
+
+  if s > 9
+    secs = s.to_s
+  else
+    secs = "0#{s}"
+  end
+
+  "#{hrs}:#{mins}:#{secs}"
+end
+
 def leap_year?(year)
   return true if year % 4 == 0 && year % 100 != 0
   return true if year % 400 == 0
@@ -93,7 +120,7 @@ def get_datetime()
   [date, time]
 end
 
-# ============ Calculate the Sun's position ============
+# ========== Calculate the Sun's position ============
 def sunpos (date, time, latitude, longitude, timezone)
   h, m, s = time.split(':').map(&:to_i)
   diy = leap_year?(date.year) ? 366 : 365 # days in year
@@ -114,17 +141,17 @@ def sunpos (date, time, latitude, longitude, timezone)
   tst = (h * 60) + m + (s / 60.0) + t_offset
 
   # sha = solar hour angle, (in radians)
-  sha = ((tst / 4.0) - 180).radians
+  sha = ((tst / 4.0) - 180).degrees
 
   # sza = solar zenith angle (in radians) can then be found from the hour angle (sha), latitude (lat) and solar declination (decl)
-  sza = acos((sin(latitude.radians) * sin(decl)) + (cos(latitude.radians) * cos(decl) * cos(sha)))
+  sza = acos((sin(latitude.degrees) * sin(decl)) + (cos(latitude.degrees) * cos(decl) * cos(sha)))
 
   #                  (sin(latitude.radians) * cos(sza)) - sin(decl)
   # cos(180 - saa) = ----------------------------------------------
   #                        cos(latitude.radians) * sin(sza)
 
   # saa = the solar azimuth angle (in radians, clockwise from north)
-  saa = (acos(((sin(latitude.radians) * cos(sza)) - sin(decl)) / (cos(latitude.radians) * sin(sza))) - 180.0) * -1
+  saa = (acos(((sin(latitude.degrees) * cos(sza)) - sin(decl)) / (cos(latitude.degrees) * sin(sza))) - 180.0.degrees) * -1
 
   [sza, saa]
 end
@@ -134,11 +161,34 @@ end
 
 date = Date.parse("2021-12-31")
 time = "23:59:59"
-longitude = 0.0 # Greenwich meridian (in degrees)
+longitude = 0.0    # Greenwich meridian (in degrees)
 latitude = 51.4769 # Greenwich observatory (in degrees)
-timezone = 0    # UTC == GMT
+timezone = 0       # UTC == GMT
 
 sza, saa = sunpos(date, time, latitude, longitude, timezone)
 
-puts sza.degrees
-puts saa.degrees
+puts sza.radians
+puts saa.radians
+
+time = "04:00:00"
+h, m, s = time.split(':').map(&:to_i)
+start = h
+
+# iterate through 6 hours, minute by minute
+loop do
+  sza, saa = sunpos(date, integers_to_time(h, m, s), latitude, longitude, timezone)
+
+  # for sunrise or sunset, the zenith is set to 90.833 degrees (the approximate correction for atmospheric refraction)
+  if (sza.radians - 90.833).abs < 5.0
+    puts "sza is #{sza.radians} at #{integers_to_time(h, m, s)}"
+  end
+
+  m += 1
+
+  if m == 60
+    h += 1
+    m = 0
+  end
+
+  break if h == start + 6 
+end
