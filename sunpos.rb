@@ -9,6 +9,20 @@ class String
   end
 end
 
+class Numeric
+  # Convert degrees to radians
+  # 90.degrees => 1.5707963267949
+  def degrees
+    self * Math::PI / 180 
+  end
+
+  # Convert radians to degrees
+  # 1.5707963267949.radians => 90.0
+  def radians
+    self * 180 / Math::PI
+  end
+end
+
 def valid_time?(time)
   return true if time =~ /^([01]?[0-9]|2[0-3])\:[0-5][0-9]\:[0-5][0-9]$/
   false
@@ -79,11 +93,11 @@ def get_datetime()
   [date, time]
 end
 
-
 # date, time = get_datetime
 
 date = Date.parse("2021-12-31")
 time = "23:59:59"
+h, m, s = time.split(':').map(&:to_i)
 longitude = 0.0 # Greenwich meridian
 timezone = 0    # UTC == GMT
 
@@ -103,4 +117,11 @@ decl = 0.006918 - (0.399912 * cos(fy)) + (0.070257 * sin(fy)) - (0.006758 * cos(
 # t_offset = time offset (in minutes), where longitude is in degrees (positive to the east of the Prime Meridian), timezone is in hours from UTC
 t_offset = eqtime + (4 * longitude) - (60 * timezone)
 
-puts t_offset
+# tst = true solar time (in minutes), where hr is the hour (0 - 23), mn is the minute (0 - 59), sc is the second (0 - 59)
+tst = (h * 60) + m + (s / 60.0) + t_offset
+
+# sha = solar hour angle, (in degrees)
+sha = (tst / 4) - 180
+
+puts 90.degrees
+puts 1.5707963267948966.radians
