@@ -93,46 +93,52 @@ def get_datetime()
   [date, time]
 end
 
+# ============ Calculate the Sun's position ============
+def sunpos (date, time, latitude, longitude, timezone)
+  h, m, s = time.split(':').map(&:to_i)
+  diy = leap_year?(date.year) ? 366 : 365 # days in year
+
+  # fy = fractional year, in radians (360 degrees ~= 6.28319 radians)
+  fy = ((2 * PI) / diy) * (date.yday - 1 + time_to_fraction(time))
+
+  # eqtime = equation of time (in minutes)
+  eqtime = 229.18 * (0.000075 + (0.001868 * cos(fy)) - (0.032077 * sin(fy)) - (0.014615 * cos(2 * fy)) - (0.040849 * sin(2 * fy)))
+
+  # decl = solar declination (in radians)
+  decl = 0.006918 - (0.399912 * cos(fy)) + (0.070257 * sin(fy)) - (0.006758 * cos(2 * fy)) + (0.000907 * sin(2 * fy)) - (0.002697 * cos(3 * fy)) + (0.00148 * sin(3 * fy))
+
+  # t_offset = time offset (in minutes), where longitude is in degrees (positive to the east of the Prime Meridian), timezone is in hours from UTC
+  t_offset = eqtime + (4 * longitude) - (60 * timezone)
+
+  # tst = true solar time (in minutes), where hr is the hour (0 - 23), mn is the minute (0 - 59), sc is the second (0 - 59)
+  tst = (h * 60) + m + (s / 60.0) + t_offset
+
+  # sha = solar hour angle, (in radians)
+  sha = ((tst / 4.0) - 180).radians
+
+  # sza = solar zenith angle (in radians) can then be found from the hour angle (sha), latitude (lat) and solar declination (decl)
+  sza = acos((sin(latitude.radians) * sin(decl)) + (cos(latitude.radians) * cos(decl) * cos(sha)))
+
+  #                  (sin(latitude.radians) * cos(sza)) - sin(decl)
+  # cos(180 - saa) = ----------------------------------------------
+  #                        cos(latitude.radians) * sin(sza)
+
+  # saa = the solar azimuth angle (in radians, clockwise from north)
+  saa = (acos(((sin(latitude.radians) * cos(sza)) - sin(decl)) / (cos(latitude.radians) * sin(sza))) - 180.0) * -1
+
+  [sza, saa]
+end
+
+
 # date, time = get_datetime
 
 date = Date.parse("2021-12-31")
 time = "23:59:59"
-h, m, s = time.split(':').map(&:to_i)
 longitude = 0.0 # Greenwich meridian (in degrees)
 latitude = 51.4769 # Greenwich observatory (in degrees)
 timezone = 0    # UTC == GMT
 
-diy = leap_year?(date.year) ? 366 : 365 # days in year
-
-# ============ Calculate the Sun's position ============
-
-# fy = fractional year, in radians (360 degrees ~= 6.28319 radians)
-fy = ((2 * PI) / diy) * (date.yday - 1 + time_to_fraction(time))
-
-# eqtime = equation of time (in minutes)
-eqtime = 229.18 * (0.000075 + (0.001868 * cos(fy)) - (0.032077 * sin(fy)) - (0.014615 * cos(2 * fy)) - (0.040849 * sin(2 * fy)))
-
-# decl = solar declination (in radians)
-decl = 0.006918 - (0.399912 * cos(fy)) + (0.070257 * sin(fy)) - (0.006758 * cos(2 * fy)) + (0.000907 * sin(2 * fy)) - (0.002697 * cos(3 * fy)) + (0.00148 * sin(3 * fy))
-
-# t_offset = time offset (in minutes), where longitude is in degrees (positive to the east of the Prime Meridian), timezone is in hours from UTC
-t_offset = eqtime + (4 * longitude) - (60 * timezone)
-
-# tst = true solar time (in minutes), where hr is the hour (0 - 23), mn is the minute (0 - 59), sc is the second (0 - 59)
-tst = (h * 60) + m + (s / 60.0) + t_offset
-
-# sha = solar hour angle, (in radians)
-sha = ((tst / 4.0) - 180).radians
-
-# sza = solar zenith angle (in radians) can then be found from the hour angle (sha), latitude (lat) and solar declination (decl)
-sza = acos((sin(latitude.radians) * sin(decl)) + (cos(latitude.radians) * cos(decl) * cos(sha)))
-
-#                  (sin(latitude.radians) * cos(sza)) - sin(decl)
-# cos(180 - saa) = ----------------------------------------------
-#                        cos(latitude.radians) * sin(sza)
-
-# saa = the solar azimuth angle (in radians, clockwise from north)
-saa = (acos(((sin(latitude.radians) * cos(sza)) - sin(decl)) / (cos(latitude.radians) * sin(sza))) - 180.0) * -1
+sza, saa = sunpos(date, time, latitude, longitude, timezone)
 
 puts sza.degrees
 puts saa.degrees
