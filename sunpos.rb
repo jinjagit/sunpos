@@ -159,6 +159,10 @@ timezone = 1       # London, UTC+1 == BST
 # latitude = -23.5558         # Sao Paulo (in degrees)
 # timezone = -3               # Sao Paulo, UTC-3
 
+# Notes on coordinates:
+# Northern latitudes are positive, Southern latitudes are negative.
+# Eastern longitudes are positive, Western longitudes are subtracted from 360 degrees (to give Eastern equivalent).
+
 times = ["03:00:00", "15:00:00"]
 sunrise = nil
 sunset = nil
@@ -168,11 +172,11 @@ sunset = nil
   start = h
   smallest_diff = nil
 
-  # iterate through 8 hours, minute by minute
+  # Iterate through 8 hours, minute by minute
   loop do
     sza, saa = sunpos(date, integers_to_time(h, m, s), latitude, longitude, timezone)
 
-    # for sunrise or sunset, the zenith is set to 90.833 degrees (the approximate correction for atmospheric refraction)
+    # For sunrise or sunset, the zenith is set to 90.833 degrees (the approximate correction for atmospheric refraction)
     diff = (90.833 - sza.radians).abs
 
     if diff < 5.0
