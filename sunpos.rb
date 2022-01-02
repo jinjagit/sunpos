@@ -104,10 +104,10 @@ timezone = 0    # UTC == GMT
 
 diy = leap_year?(date.year) ? 366 : 365 # days in year
 
+# ============ Calculate the Sun's position ============
+
 # fy = fractional year, in radians (360 degrees ~= 6.28319 radians)
 fy = ((2 * PI) / diy) * (date.yday - 1 + time_to_fraction(time))
-
-# ============ Calculate the Sun's position ============
 
 # eqtime = equation of time (in minutes)
 eqtime = 229.18 * (0.000075 + (0.001868 * cos(fy)) - (0.032077 * sin(fy)) - (0.014615 * cos(2 * fy)) - (0.040849 * sin(2 * fy)))
@@ -124,7 +124,15 @@ tst = (h * 60) + m + (s / 60.0) + t_offset
 # sha = solar hour angle, (in radians)
 sha = ((tst / 4.0) - 180).radians
 
-# The solar zenith angle (in radians) can then be found from the hour angle (sha), latitude (lat) and solar declination (decl) using the following equation:
+# sza = solar zenith angle (in radians) can then be found from the hour angle (sha), latitude (lat) and solar declination (decl)
 sza = acos((sin(latitude.radians) * sin(decl)) + (cos(latitude.radians) * cos(decl) * cos(sha)))
 
+#                  (sin(latitude.radians) * cos(sza)) - sin(decl)
+# cos(180 - saa) = ----------------------------------------------
+#                        cos(latitude.radians) * sin(sza)
+
+# saa = the solar azimuth angle (in radians, clockwise from north)
+saa = (acos(((sin(latitude.radians) * cos(sza)) - sin(decl)) / (cos(latitude.radians) * sin(sza))) - 180.0) * -1
+
 puts sza.degrees
+puts saa.degrees
