@@ -84,11 +84,15 @@ end
 
 date = Date.parse("2021-12-31")
 time = "23:59:59"
+longitude = 0.0 # Greenwich meridian
+timezone = 0    # UTC == GMT
 
 diy = leap_year?(date.year) ? 366 : 365 # days in year
 
 # fy = fractional year, in radians (360 degrees ~= 6.28319 radians)
 fy = ((2 * PI) / diy) * (date.yday - 1 + time_to_fraction(time))
+
+# ============ Calculate the Sun's position ============
 
 # eqtime = equation of time (in minutes)
 eqtime = 229.18 * (0.000075 + (0.001868 * cos(fy)) - (0.032077 * sin(fy)) - (0.014615 * cos(2 * fy)) - (0.040849 * sin(2 * fy)))
@@ -96,4 +100,7 @@ eqtime = 229.18 * (0.000075 + (0.001868 * cos(fy)) - (0.032077 * sin(fy)) - (0.0
 # decl = solar declination (in radians)
 decl = 0.006918 - (0.399912 * cos(fy)) + (0.070257 * sin(fy)) - (0.006758 * cos(2 * fy)) + (0.000907 * sin(2 * fy)) - (0.002697 * cos(3 * fy)) + (0.00148 * sin(3 * fy))
 
-puts decl
+# t_offset = time offset (in minutes), where longitude is in degrees (positive to the east of the Prime Meridian), timezone is in hours from UTC
+t_offset = eqtime + (4 * longitude) - (60 * timezone)
+
+puts t_offset
