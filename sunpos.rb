@@ -153,11 +153,11 @@ date = get_date
 
 longitude = 0.0    # Greenwich meridian (in degrees)
 latitude = 51.4769 # Greenwich observatory (in degrees)
-timezone = 1       # UTC+1 == BST
+timezone = 1       # London, UTC+1 == BST
 
-# longitude = 360.0 - 46.6396    # Sao Paulo (in degrees)
-# latitude = -23.5558 # Sao Paulo (in degrees)
-# timezone = -3 # Sao Paulo, UTC-3
+# longitude = 360.0 - 46.6396 # Sao Paulo (in degrees)
+# latitude = -23.5558         # Sao Paulo (in degrees)
+# timezone = -3               # Sao Paulo, UTC-3
 
 times = ["03:00:00", "15:00:00"]
 sunrise = nil
